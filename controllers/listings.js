@@ -25,6 +25,7 @@ module.exports.showListing = async (req, res) => {
 };
 
 module.exports.createListing = async (req, res, next) => {
+  
   let response = await geoCodingClient
     .forwardGeocode({
       query: req.body.listing.location,
@@ -32,17 +33,30 @@ module.exports.createListing = async (req, res, next) => {
     })
     .send();
 
-  let url = req.file.path;
-  let filename = req.file.filename;
-
+  
   const newListing = new Listing(req.body.listing);
   newListing.owner = req.user._id;
-  newListing.image = { filename, url };
+
+  
+  if (req.files && req.files.length > 0) {
+    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    newListing.images.push(...imgs);
+  }
+
+  
+  if (req.body.imageUrl && req.body.imageUrl.trim() !== "") {
+    newListing.images.push({ url: req.body.imageUrl, filename: "user-url" });
+  }
+
+  
   newListing.geometry = response.body.features[0].geometry;
+  
   await newListing.save();
+
   req.flash("success", "New listing created!");
-  res.redirect("/listings");
+  res.redirect(`/listings/${newListing._id}`);
 };
+
 
 module.exports.renderEditForm = async (req, res) => {
   let { id } = req.params;

@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Review = require("./review.js");
 
+// Reusable image schema
+const ImageSchema = new mongoose.Schema({
+  url: String,
+  filename: String,
+});
+
+// Main Listing schema
 const listingSchema = new Schema({
   title: {
     type: String,
@@ -10,14 +17,8 @@ const listingSchema = new Schema({
   description: {
     type: String,
   },
-  image: {
-    filename: {
-      type: String,
-    },
-    url: {
-      type: String,
-    },
-  },
+  // ✅ Now supports multiple images
+  images: [ImageSchema],
   price: {
     type: Number,
   },
@@ -53,6 +54,7 @@ const listingSchema = new Schema({
   },
 });
 
+// Middleware: delete reviews if a listing is deleted
 listingSchema.post("findOneAndDelete", async (listing) => {
   if (listing) {
     await Review.deleteMany({ _id: { $in: listing.reviews } });

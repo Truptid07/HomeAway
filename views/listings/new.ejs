@@ -20,8 +20,12 @@
                             <div class="invalid-feedback">Please enter a short description</div>
                         </div>
                         <div class="mb-3">
-                            <label for="image" class="form-label">Upload Listing Image</label>
-                            <input type="file" name="listing[image]" id="image" class="form-control" required>
+                            <label for="imageFile">Upload Image File</label>
+                            <input type="file" id="imageFile" name="listing[image]" accept="image/*">
+
+                            <label for="imageUrl">Or Paste Image URL</label>
+                            <input type="text" id="imageUrl" name="listing[imageUrl]" placeholder="https://example.com/photo.jpg">
+
                             <div class="invalid-feedback">Please select image to upload</div>
                         </div>
                         <div>
